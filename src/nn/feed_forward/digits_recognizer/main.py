@@ -8,8 +8,8 @@ sys.path.append(
     f'{Path(__file__).parent.parent.parent.parent}'
 )
 from my_logger.my_logger import MyLogger
-from nn.digits_recognizer.dr_common import get_args
-from nn.digits_recognizer.digits_recognizer import DigitsRecognizer
+from nn.feed_forward.digits_recognizer.dr_common import get_args
+from nn.feed_forward.digits_recognizer.digits_recognizer import DigitsRecognizer
 
 
 if __name__ == '__main__':
