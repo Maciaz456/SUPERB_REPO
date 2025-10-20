@@ -4,6 +4,8 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from common import custom_validate_call, model_config
+
 
 class LoggerException(
     Exception
@@ -22,10 +24,13 @@ class MyLogger(
     :param log_file:      File to which to log the output.
     :param level:         Level of the logged output.
     '''
+    model_config = model_config
+
     level: str | int = 'INFO'
     command_line: bool = True
     log_file: Path | None = None
 
+    @custom_validate_call
     def model_post_init(
         self,
         _
@@ -56,6 +61,7 @@ class MyLogger(
             )
             self.__add_file_handler()
 
+    @custom_validate_call
     def __add_command_line_handler(
         self
     ) -> None:
@@ -68,6 +74,7 @@ class MyLogger(
             handler
         )
 
+    @custom_validate_call
     def __add_file_handler(
         self
     ) -> None:
@@ -82,6 +89,7 @@ class MyLogger(
             handler
         )
 
+    @custom_validate_call
     def __set_logging_methods(
         self,
     ) -> None:
