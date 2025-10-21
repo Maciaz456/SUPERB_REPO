@@ -20,16 +20,14 @@ from my_logger.my_logger import MyLogger
     )
 )
 def test_my_logger(
-    tmpdir,
+    tmp_path,
     command_line,
     log_file
 ):
     if log_file:
-        log_file = tmpdir.join(
+        log_file = Path.joinpath(
+            tmp_path,
             log_file
-        )
-        log_file = Path(
-            f'{log_file}'
         )
 
     logger = MyLogger(

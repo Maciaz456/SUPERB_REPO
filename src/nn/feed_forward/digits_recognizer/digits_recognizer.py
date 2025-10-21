@@ -8,7 +8,7 @@ import torch
 from PIL import Image
 from torchvision import datasets, transforms
 
-from dr_common import DigitsRecognizerException, custom_validate_call
+from nn.feed_forward.digits_recognizer.dr_common import DigitsRecognizerException, custom_validate_call
 from my_logger.my_logger import MyLogger
 
 
@@ -324,7 +324,7 @@ class DigitsRecognizer(
             self._logger.info(
                 f'Image: {img_path}'
             )
-            img_tensor = self.__create_image_tensor(
+            img_tensor = self.create_image_tensor(
                 img_path
             )
             digit = self(
@@ -343,7 +343,7 @@ class DigitsRecognizer(
         return result
 
     @custom_validate_call
-    def __create_image_tensor(
+    def create_image_tensor(
         self,
         img_path: Path
     ) -> torch.Tensor:
