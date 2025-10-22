@@ -1,4 +1,4 @@
-'''Contains methods and classes common for the whole repository.'''
+'''Contains methods and classes common for the whole source code.'''
 import pydantic
 
 

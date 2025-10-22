@@ -330,7 +330,8 @@ class DigitsRecognizer(
             digit = self(
                 img_tensor
             )
-            digit = digit.argmax()
+            digit = digit.argmax().item()
+
             self._logger.info(
                 f'Digit: {digit}'
             )
