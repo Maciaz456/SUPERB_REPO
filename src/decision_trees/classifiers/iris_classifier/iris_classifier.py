@@ -11,6 +11,9 @@ from common import custom_validate_call, model_config
 from my_logger.my_logger import MyLogger
 
 
+N_FEATURES = 4
+
+
 class IrisClassifier(
     BaseModel
 ):
@@ -29,12 +32,13 @@ class IrisClassifier(
         self._dtree = DecisionTreeClassifier()
         self.__prepare_learning_data()
 
+    @custom_validate_call
     def __prepare_learning_data(
         self
     ) -> None:
         '''Prepare learning data.'''
         self.logger.info(
-            'Preparing learning dataset.'
+            'Preparing learning data.'
         )
 
         dataset = load_iris()
@@ -114,8 +118,8 @@ class IrisClassifier(
         '''
         Test the model.
 
-        :param train_X:  test X.
-        :param train_y:  test y.
+        :param test_X:  test X.
+        :param test_y:  test y.
         '''
         self.logger.info(
             'Testing the classifier.'
@@ -144,8 +148,8 @@ class IrisClassifier(
     @custom_validate_call
     def classify(
         self,
-        X: np.ndarray
-    ) -> dict[np.ndarray, str]:
+        X: list | np.ndarray
+    ) -> list[tuple]:
         '''
         Classify the iris species.
 
@@ -155,22 +159,32 @@ class IrisClassifier(
                    - petal length [cm]
                    - petal width [cm]
 
-        :return:   Iris names.
+        :return:   Iris sample features with classified names.
         '''
         self.logger.info(
-            'Classifying iris species.'
+            'Iris species classification.'
         )
 
         y_pred = self._dtree.predict(
             X
         )
+        result = [
+            (
+                X[i], f'{self._target_names[x]}'
+            ) for i, x in enumerate(
+                y_pred
+            )
+        ]
 
-        result = {
-            x: self._target_names[x] for x in y_pred
-        }
-
+        result_as_str = '\n'.join(
+            f'{x} - {name}' for x, name in result
+        )
         self.logger.info(
-            'Classifying completed.'
+            f'Classification outcome:\n{result_as_str}'
+        )
+
+        self.logger.debug(
+            'Classification completed.'
         )
 
         return result

@@ -7,12 +7,15 @@ import torch
 sys.path.append(
     f'{Path(__file__).parent.parent.parent.parent}'
 )
+from common import custom_validate_call
 from my_logger.my_logger import MyLogger
 from nn.feed_forward.digits_recognizer.dr_common import get_args
 from nn.feed_forward.digits_recognizer.digits_recognizer import DigitsRecognizer
 
 
-if __name__ == '__main__':
+@custom_validate_call
+def main() -> None:
+    '''Main function.'''
     args = get_args()
 
     device = torch.device(
@@ -59,3 +62,7 @@ if __name__ == '__main__':
             model.recognize(
                 args.image_paths
             )
+
+
+if __name__ == '__main__':
+    main()

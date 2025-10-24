@@ -1,9 +1,8 @@
 '''Common methods and classes.'''
 import argparse
-from logging import _levelToName
 from pathlib import Path
 
-from common import custom_validate_call
+from common import custom_validate_call, add_common_options
 
 
 class DigitsRecognizerException(
@@ -24,14 +23,13 @@ def get_args() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    common_args = args.add_argument_group(
-        'Common options'
+    common_args = add_common_options(
+        args
     )
     common_args.add_argument(
         '--cuda',
         '-c',
         action='store_true',
-        required=False,
         help='Use GPU for computations if possible.'
     )
     common_args.add_argument(
@@ -39,30 +37,10 @@ def get_args() -> argparse.Namespace:
         '-pf',
         default='digits_recognizer.pth',
         type=Path,
-        required=False,
         help=(
             'Optional .PTH file to which the model parameters will be saved in the learning mode '
             'and/or from which they will be read in the evaluation mode.'
         )
-    )
-    common_args.add_argument(
-        '--log-level',
-        '-ll',
-        default='INFO',
-        type=str,
-        choices=list(
-            _levelToName.values()
-        ),
-        required=False,
-        help='Logging level.'
-    )
-    common_args.add_argument(
-        '--log-file',
-        '-lf',
-        default=None,
-        type=Path,
-        required=False,
-        help='Optional log file.'
     )
 
     learning_args = args.add_argument_group(
@@ -72,7 +50,6 @@ def get_args() -> argparse.Namespace:
         '--learn',
         '-l',
         action='store_true',
-        required=False,
         help='Flag to run model learning.'
     )
     learning_args.add_argument(
@@ -80,7 +57,6 @@ def get_args() -> argparse.Namespace:
         '-df',
         default='data',
         type=Path,
-        required=False,
         help='Path to the folder where the MNIST dataset will be downloaded.'
     )
     learning_args.add_argument(
@@ -88,7 +64,6 @@ def get_args() -> argparse.Namespace:
         '-bs',
         default=100,
         type=int,
-        required=False,
         help='Batch size in the data loaders.'
     )
     learning_args.add_argument(
@@ -99,7 +74,6 @@ def get_args() -> argparse.Namespace:
         default=[
             500
         ],
-        required=False,
         help='Hidden layers sizes. It also defines number of the hidden layers. The input one has a size of 784.'
     )
     learning_args.add_argument(
@@ -107,7 +81,6 @@ def get_args() -> argparse.Namespace:
         '-lr',
         default=0.01,
         type=float,
-        required=False,
         help='Learning rate for the optimizer.'
     )
     learning_args.add_argument(
@@ -115,7 +88,6 @@ def get_args() -> argparse.Namespace:
         '-e',
         default=2,
         type=int,
-        required=False,
         help='Number of epochs in the training loop.'
     )
     learning_args.add_argument(
@@ -123,7 +95,6 @@ def get_args() -> argparse.Namespace:
         '-at',
         default=None,
         type=float,
-        required=False,
         help='Acceptable accuracy threshold. If specified and met, the model parameters will be saved.'
     )
 
@@ -134,14 +105,12 @@ def get_args() -> argparse.Namespace:
         '--evaluate',
         '-ev',
         action='store_true',
-        required=False,
         help='Flag to evaluate digits on the user-specified images.'
     )
     eval_args.add_argument(
         '--read-pth-file',
         '-rpf',
         action='store_true',
-        required=False,
         help='Flag to read the model parameters from the .PTH file before evaluation.'
     )
     eval_args.add_argument(
@@ -150,7 +119,6 @@ def get_args() -> argparse.Namespace:
         nargs='+',
         default=None,
         type=Path,
-        required=False,
         help='Images with the size of 28x28 pixels depicting digits to recognize.'
     )
 
