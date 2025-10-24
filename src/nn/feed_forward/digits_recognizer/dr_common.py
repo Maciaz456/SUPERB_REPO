@@ -165,7 +165,7 @@ def get_args() -> argparse.Namespace:
 
     if args.evaluate and not args.image_paths:
         raise DigitsRecognizerException(
-            'Evaluation has been selected but none of the image paths has been passed.'
+            'Evaluation has been selected but none of the image paths has been passed!'
         )
 
     return args

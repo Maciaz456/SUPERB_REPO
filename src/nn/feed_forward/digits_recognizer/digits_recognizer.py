@@ -8,8 +8,9 @@ import torch
 from PIL import Image
 from torchvision import datasets, transforms
 
-from nn.feed_forward.digits_recognizer.dr_common import DigitsRecognizerException, custom_validate_call
+from common import custom_validate_call
 from my_logger.my_logger import MyLogger
+from nn.feed_forward.digits_recognizer.dr_common import DigitsRecognizerException
 
 
 N_PIXELS = 784

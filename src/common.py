@@ -4,7 +4,8 @@ import pydantic
 
 model_config = pydantic.ConfigDict(
     extra='allow',
-    strict=True
+    strict=True,
+    arbitrary_types_allowed=True
 )
 
 custom_validate_call = pydantic.validate_call(
