@@ -148,7 +148,7 @@ class IrisClassifier(
     @custom_validate_call
     def classify(
         self,
-        X: list | np.ndarray
+        X: list[list | tuple | np.ndarray] | np.ndarray
     ) -> list[tuple]:
         '''
         Classify the iris species.
