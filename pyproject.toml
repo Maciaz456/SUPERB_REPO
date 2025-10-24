@@ -1,0 +1,23 @@
+[project]
+name = "SUPERB_REPO"
+version = "1.0.0"
+authors = [
+    { name = "Maciej Dałek", email = "maciej.dalek99@proton.me" }
+]
+
+[[tool.poetry.source]]
+name = "pytorch-cu130-url"
+url = "https://download.pytorch.org/whl/cu130"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+matplotlib = "3.10.6"
+numpy = "2.3.3"
+pydantic = "2.12.2"
+scikit-learn = "1.7.2"
+scipy = "1.16.2"
+torch = { version = "2.8.0+130", source = "pytorch-cu130-url" }
+torchvision = { version = "0.23.0+cu130", source = "pytorch-cu130-url" }
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.4.2"
