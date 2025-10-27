@@ -10,7 +10,7 @@ from torchvision import datasets, transforms
 
 from common import custom_validate_call
 from my_logger.my_logger import MyLogger
-from nn.feed_forward.digits_recognizer.dr_common import DigitsRecognizerException
+from nn.ff.digits_recognizer.dr_common import DigitsRecognizerException
 
 
 N_PIXELS = 784

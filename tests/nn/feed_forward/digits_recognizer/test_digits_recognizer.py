@@ -3,8 +3,8 @@ from unittest.mock import Mock, call, patch
 import pytest
 import torch
 
-from nn.feed_forward.digits_recognizer.digits_recognizer import DigitsRecognizer, N_PIXELS, N_CLASSES
-from nn.feed_forward.digits_recognizer.dr_common import DigitsRecognizerException
+from nn.ff.digits_recognizer.digits_recognizer import DigitsRecognizer, N_PIXELS, N_CLASSES
+from nn.ff.digits_recognizer.dr_common import DigitsRecognizerException
 
 
 @pytest.fixture
@@ -106,10 +106,10 @@ def test_forward(
 
 
 @patch(
-    'nn.feed_forward.digits_recognizer.digits_recognizer.datasets.MNIST'
+    'nn.ff.digits_recognizer.digits_recognizer.datasets.MNIST'
 )
 @patch(
-    'nn.feed_forward.digits_recognizer.digits_recognizer.torch.utils.data.DataLoader'
+    'nn.ff.digits_recognizer.digits_recognizer.torch.utils.data.DataLoader'
 )
 def test_mnist_dataset(
     data_loader_mock,

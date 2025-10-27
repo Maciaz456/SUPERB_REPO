@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from decision_trees.classifiers.iris_classifier.iris_classifier import IrisClassifier
+from decision_trees.classifiers.iris.iris import IrisClassifier
 
 
 @pytest.fixture

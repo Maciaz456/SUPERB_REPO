@@ -6,8 +6,8 @@ sys.path.append(
     f'{Path(__file__).parent.parent.parent.parent}'
 )
 from common import custom_validate_call
-from decision_trees.classifiers.iris_classifier.ic_common import get_args
-from decision_trees.classifiers.iris_classifier.iris_classifier import IrisClassifier
+from decision_trees.classifiers.iris.i_common import get_args
+from decision_trees.classifiers.iris.iris import IrisClassifier
 from my_logger.my_logger import MyLogger
 
 
