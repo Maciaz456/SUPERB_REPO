@@ -1,11 +1,17 @@
 '''Contains IrisClassifier.'''
+import os
+import pickle
+from annotated_types import Ge, Le
+from pathlib import Path
+from typing import Annotated, Literal
+
 import numpy as np
 from matplotlib import pyplot
 from pydantic import BaseModel, Field
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, confusion_matrix
 
 from common import custom_validate_call, model_config
 from my_logger.my_logger import MyLogger
@@ -22,6 +28,9 @@ class IrisClassifier(
 
     logger: MyLogger = Field(
         frozen=True
+    )
+    pkl_file: Path = Path(
+        'dtree.pkl'
     )
 
     @custom_validate_call
@@ -54,12 +63,15 @@ class IrisClassifier(
     @custom_validate_call
     def learn(
         self,
-        test_size: int | float = 0.2
+        test_size: int | float = 0.2,
+        accuracy_threshold: Annotated[float, Ge(0), Le(100)] | None = None
     ) -> None:
         '''
         Learn the model.
 
-        :param test_size:  Test size.
+        :param test_size:           Test size.
+        :param accuracy_threshold:  Acceptable accuracy threshold to save the decision tree.
+                                    If not passed, the tree will not be saved.
         '''
         self.logger.info(
             'Learning the classifier.'
@@ -77,7 +89,8 @@ class IrisClassifier(
         )
         self.__test(
             test_X,
-            test_y
+            test_y,
+            accuracy_threshold
         )
 
         self.logger.debug(
@@ -93,8 +106,8 @@ class IrisClassifier(
         '''
         Train the model.
 
-        :param train_X:  train X.
-        :param train_y:  train y.
+        :param train_X:  Train X.
+        :param train_y:  Train y.
         '''
         self.logger.info(
             'Training the classifier.'
@@ -113,13 +126,16 @@ class IrisClassifier(
     def __test(
         self,
         test_X: np.ndarray,
-        test_y: np.ndarray
+        test_y: np.ndarray,
+        accuracy_threshold: Annotated[float, Ge(0), Le(100)] | None = None
     ):
         '''
         Test the model.
 
-        :param test_X:  test X.
-        :param test_y:  test y.
+        :param test_X:              Test X.
+        :param test_y:              Test y.
+        :param accuracy_threshold:  Acceptable accuracy threshold to save the decision tree.
+                                    If not passed, the tree will not be saved.
         '''
         self.logger.info(
             'Testing the classifier.'
@@ -141,29 +157,85 @@ class IrisClassifier(
         display.plot()
         pyplot.show()
 
+        test_accuracy = accuracy_score(
+            test_y,
+            y_pred
+        )
+        self.logger.info(
+            f'Test accuracy: {(test_accuracy):.1%}'
+        )
+        if accuracy_threshold is not None and test_accuracy*100 >= accuracy_threshold:
+            self.__handle_dtree_pickle(
+                'dump'
+            )
+
         self.logger.debug(
             'Testing completed.'
         )
 
     @custom_validate_call
+    def __handle_dtree_pickle(
+        self,
+        action: Literal['dump'] | Literal['load']
+    ) -> None:
+        '''
+        Handle self._dtree pickle.
+
+        :param action:    Either dump to or load from the .pkl file
+        '''
+        if action == 'dump':
+            if self.pkl_file.exists():
+                os.unlink(
+                    self.pkl_file
+                )
+            self.pkl_file.parent.mkdir(
+                parents=True,
+                exist_ok=True
+            )
+
+            with open(
+                self.pkl_file,
+                'wb'
+            ) as f:
+                pickle.dump(
+                    self._dtree,
+                    f
+                )
+        elif action == 'load':
+            with open(
+                self.pkl_file,
+                'rb'
+            ) as f:
+                self._dtree = pickle.load(
+                    f
+                )
+
+    @custom_validate_call
     def classify(
         self,
-        X: list[list | tuple | np.ndarray] | np.ndarray
+        X: list[list | tuple | np.ndarray] | np.ndarray,
+        read_pkl_file: bool = False
     ) -> list[tuple]:
         '''
         Classify the iris species.
 
-        :param X:  X for the classification. Each row must cotain:\n
-                   - sepal length [cm]
-                   - sepal width [cm]
-                   - petal length [cm]
-                   - petal width [cm]
+        :param X:              X for the classification. Each row must cotain:\n
+                               - sepal length [cm]
+                               - sepal width [cm]
+                               - petal length [cm]
+                               - petal width [cm]
+        :param read_pkl_file:  Flag to load the pickled decision tree before the classification.
 
-        :return:   Iris sample features with classified names.
+        :return:               Iris sample features with classified names.
         '''
         self.logger.info(
             'Iris species classification.'
         )
+
+        if read_pkl_file:
+            self.__handle_dtree_pickle(
+                'load'
+            )
 
         y_pred = self._dtree.predict(
             X
