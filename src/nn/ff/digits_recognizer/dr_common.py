@@ -8,7 +8,7 @@ from common import custom_validate_call, add_common_options
 class DigitsRecognizerException(
     Exception
 ):
-    '''Raised when the DigitRecognizer failed.'''
+    '''Raised when the model recognizing digits failed.'''
     pass
 
 
