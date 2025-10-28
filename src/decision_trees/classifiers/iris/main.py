@@ -23,16 +23,21 @@ def main() -> None:
     )
 
     classifier = IrisClassifier(
-        logger=logger
+        logger=logger,
+        pkl_file=args.pkl_file
     )
 
-    classifier.learn(
-        args.test_size
-    )
+    if args.learn:
+        classifier.learn(
+            args.test_size,
+            args.accuracy_threshold
+        )
 
-    classifier.classify(
-        args.iris_dims
-    )
+    if args.classify:
+        classifier.classify(
+            args.iris_dims,
+            args.read_pkl_file
+        )
 
 
 if __name__ == '__main__':

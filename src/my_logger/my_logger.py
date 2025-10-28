@@ -7,13 +7,6 @@ from pydantic import BaseModel
 from common import custom_validate_call, model_config
 
 
-class LoggerException(
-    Exception
-):
-    '''Raised when logging the output failed.'''
-    pass
-
-
 class MyLogger(
     BaseModel
 ):
