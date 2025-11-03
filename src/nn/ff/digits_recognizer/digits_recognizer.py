@@ -1,4 +1,4 @@
-'''Contain DigitsRecognizer.'''
+'''Contains DigitsRecognizer.'''
 import os
 from annotated_types import Ge, Le
 from pathlib import Path
