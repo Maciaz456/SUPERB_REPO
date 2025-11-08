@@ -47,7 +47,7 @@ class Wine(
     def prepare_data(
         self
     ) -> None:
-        '''Loads wine data and scale them.'''
+        '''Load wine data and scale them.'''
         self.logger.info(
             'Preparing data.'
         )
