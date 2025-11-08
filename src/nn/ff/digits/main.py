@@ -9,8 +9,8 @@ sys.path.append(
 )
 from common import custom_validate_call
 from my_logger.my_logger import MyLogger
-from nn.ff.digits_recognizer.dr_common import get_args
-from nn.ff.digits_recognizer.digits_recognizer import DigitsRecognizer
+from nn.ff.digits.d_common import get_args
+from nn.ff.digits.digits import Digits
 
 
 @custom_validate_call
@@ -28,7 +28,7 @@ def main() -> None:
         log_file=args.log_file
     )
 
-    model = DigitsRecognizer(
+    model = Digits(
         device,
         args.hidden_sizes,
         logger

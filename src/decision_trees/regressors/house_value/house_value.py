@@ -50,9 +50,9 @@ class HouseValueRegressor(
                 'learning_data'
             )
         )
-        self._X = dataset['data']
+        self._learn_X = dataset['data']
         self._feature_names = dataset['feature_names']
-        self._y = dataset['target']
+        self._learn_y = dataset['target']
         self._target_names = dataset['target_names']
 
         self.logger.debug(
@@ -74,8 +74,8 @@ class HouseValueRegressor(
         )
 
         train_X, test_X, train_y, test_y = train_test_split(
-            self._X,
-            self._y,
+            self._learn_X,
+            self._learn_y,
             test_size=test_size,
             random_state=10
         )
@@ -123,7 +123,7 @@ class HouseValueRegressor(
         self,
         test_X: np.ndarray,
         test_y: np.ndarray
-    ):
+    ) -> None:
         '''
         Test the model.
 
