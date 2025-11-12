@@ -35,7 +35,7 @@ class DigitsRecognizer(
         '''
         super().__init__()
 
-        self.__layers = torch.nn.ModuleList()
+        self.__layers = torch.nn.Sequential()
         in_features = N_PIXELS
         for layer_size in hidden_sizes:
             self.__layers.append(
@@ -43,6 +43,9 @@ class DigitsRecognizer(
                     in_features,
                     layer_size
                 )
+            )
+            self.__layers.append(
+                torch.nn.ReLU()
             )
             in_features = layer_size
 
@@ -52,8 +55,6 @@ class DigitsRecognizer(
                 N_CLASSES
             )
         )
-
-        self._relu = torch.nn.ReLU()
 
         self._loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -85,20 +86,10 @@ class DigitsRecognizer(
         out = image_tensors.to(
             self.__device
         )
-        for i, layer in enumerate(
-            self.__layers
-        ):
-            out = layer(
-                out
-            )
-            if i < len(
-                self.__layers
-            ) - 1:
-                out = self._relu(
-                    out
-                )
 
-        return out
+        return self.__layers(
+            out
+        )
 
     @custom_validate_call
     def prepare_mnist_dataset(
