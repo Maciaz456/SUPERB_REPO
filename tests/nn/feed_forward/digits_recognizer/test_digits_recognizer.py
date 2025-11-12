@@ -3,8 +3,8 @@ from unittest.mock import Mock, call, patch
 import pytest
 import torch
 
-from nn.ff.digits_recognizer.digits_recognizer import DigitsRecognizer, N_PIXELS, N_CLASSES
-from nn.ff.digits_recognizer.dr_common import DigitsRecognizerException
+from nn.ff.digits.digits import Digits, N_PIXELS, N_CLASSES
+from nn.ff.digits.d_common import DigitsException
 
 
 @pytest.fixture
@@ -19,12 +19,12 @@ def device():
         [500, 200]
     ]
 )
-def digits_recognizer(
+def digits(
     device,
     request,
     dummy_my_logger
 ):
-    return DigitsRecognizer(
+    return Digits(
         device,
         request.param,
         dummy_my_logger
@@ -55,13 +55,13 @@ def test_layers_setup(
     hidden_sizes,
     dummy_my_logger
 ):
-    digits_recognizer = DigitsRecognizer(
+    digits = Digits(
         device,
         hidden_sizes,
         dummy_my_logger
     )
 
-    layers = digits_recognizer._DigitsRecognizer__layers
+    layers = digits._Digits__layers
     n_layers = len(
         layers
     )
@@ -81,45 +81,45 @@ def test_layers_setup(
 
 
 def test_forward(
-    digits_recognizer,
+    digits,
     dummy_tensor
 ):
     for i, layer in enumerate(
-        digits_recognizer._DigitsRecognizer__layers
+        digits._Digits__layers
     ):
         mocked_layer = Mock(
             spec_set=layer,
             return_value=dummy_tensor
         )
-        digits_recognizer._DigitsRecognizer__layers[i] = mocked_layer
+        digits._Digits__layers[i] = mocked_layer
 
-    digits_recognizer._relu = Mock(
-        spec_set=digits_recognizer._relu
+    digits._relu = Mock(
+        spec_set=digits._relu
     )
 
-    digits_recognizer.forward(
+    digits.forward(
         dummy_tensor
     )
-    for layer in digits_recognizer._DigitsRecognizer__layers:
+    for layer in digits._Digits__layers:
         layer.assert_called_once()
-    assert digits_recognizer._relu.call_count == len(digits_recognizer._DigitsRecognizer__layers) - 1
+    assert digits._relu.call_count == len(digits._Digits__layers) - 1
 
 
 @patch(
-    'nn.ff.digits_recognizer.digits_recognizer.datasets.MNIST'
+    'nn.ff.digits.digits.datasets.MNIST'
 )
 @patch(
-    'nn.ff.digits_recognizer.digits_recognizer.torch.utils.data.DataLoader'
+    'nn.ff.digits.digits.torch.utils.data.DataLoader'
 )
 def test_mnist_dataset(
     data_loader_mock,
     mnist_mock,
-    digits_recognizer,
+    digits,
     tmp_path
 ):
     batch_size = 100
 
-    digits_recognizer.prepare_mnist_dataset(
+    digits.prepare_mnist_dataset(
         tmp_path,
         batch_size=batch_size
     )
@@ -128,24 +128,24 @@ def test_mnist_dataset(
         call(
             root=tmp_path,
             train=True,
-            transform=digits_recognizer._transform,
+            transform=digits._transform,
             download=True
         ),
         call(
             root=tmp_path,
             train=False,
-            transform=digits_recognizer._transform
+            transform=digits._transform
         )
     ]
 
     assert data_loader_mock.call_args_list == [
         call(
-            dataset=digits_recognizer._train_dataset,
+            dataset=digits._train_dataset,
             batch_size=batch_size,
             shuffle=True
         ),
         call(
-            dataset=digits_recognizer._test_dataset,
+            dataset=digits._test_dataset,
             batch_size=batch_size,
             shuffle=False
         )
@@ -153,13 +153,13 @@ def test_mnist_dataset(
 
 
 def test_create_image_tensor(
-    digits_recognizer,
+    digits,
     data_folder
 ):
     img_path = data_folder.joinpath(
         'correct.png'
     )
-    image_tensor = digits_recognizer.create_image_tensor(
+    image_tensor = digits.create_image_tensor(
         img_path
     )
     correct_tensor_file = data_folder.joinpath(
@@ -177,8 +177,8 @@ def test_create_image_tensor(
         'incorrect.png'
     )
     with pytest.raises(
-        DigitsRecognizerException
+        DigitsException
     ):
-        digits_recognizer.create_image_tensor(
+        digits.create_image_tensor(
             img_path
         )

@@ -51,9 +51,9 @@ class IrisClassifier(
         )
 
         dataset = load_iris()
-        self._X = dataset['data']
+        self._learn_X = dataset['data']
         self._feature_names = dataset['feature_names']
-        self._y = dataset['target']
+        self._learn_y = dataset['target']
         self._target_names = dataset['target_names']
 
         self.logger.debug(
@@ -78,8 +78,8 @@ class IrisClassifier(
         )
 
         train_X, test_X, train_y, test_y = train_test_split(
-            self._X,
-            self._y,
+            self._learn_X,
+            self._learn_y,
             test_size=test_size
         )
 
@@ -128,7 +128,7 @@ class IrisClassifier(
         test_X: np.ndarray,
         test_y: np.ndarray,
         accuracy_threshold: Annotated[float, Ge(0), Le(100)] | None = None
-    ):
+    ) -> None:
         '''
         Test the model.
 
@@ -181,7 +181,7 @@ class IrisClassifier(
         '''
         Handle self._dtree pickle.
 
-        :param action:    Either dump to or load from the .pkl file
+        :param action:  Either dump to or load from the .pkl file.
         '''
         if action == 'dump':
             if self.pkl_file.exists():
