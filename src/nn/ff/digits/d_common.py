@@ -5,10 +5,10 @@ from pathlib import Path
 from common import custom_validate_call, add_common_options
 
 
-class DigitsRecognizerException(
+class DigitsException(
     Exception
 ):
-    '''Raised when the DigitRecognizer failed.'''
+    '''Raised when the Digits failed.'''
     pass
 
 
@@ -35,7 +35,7 @@ def get_args() -> argparse.Namespace:
     common_args.add_argument(
         '--pth-file',
         '-pf',
-        default='digits_recognizer.pth',
+        default='digits.pth',
         type=Path,
         help=(
             'Optional .PTH file to which the model parameters will be saved in the learning mode '
@@ -119,7 +119,7 @@ def get_args() -> argparse.Namespace:
         nargs='+',
         default=None,
         type=Path,
-        help='Images with the size of 28x28 pixels depicting digits to recognize.'
+        help='Grayscale images with the size of 28x28 pixels depicting digits to recognize.'
     )
 
     args = args.parse_args()
@@ -127,12 +127,12 @@ def get_args() -> argparse.Namespace:
     if not (
         args.learn or args.evaluate
     ):
-        raise DigitsRecognizerException(
+        raise DigitsException(
             'Neither learning nor evaluation has been selected!'
         )
 
     if args.evaluate and not args.image_paths:
-        raise DigitsRecognizerException(
+        raise DigitsException(
             'Evaluation has been selected but none of the image paths has been passed!'
         )
 

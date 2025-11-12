@@ -1,4 +1,4 @@
-'''Contains DigitsRecognizer.'''
+'''Contains Digits.'''
 import os
 from annotated_types import Ge, Le
 from pathlib import Path
@@ -10,17 +10,17 @@ from torchvision import datasets, transforms
 
 from common import custom_validate_call
 from my_logger.my_logger import MyLogger
-from nn.ff.digits_recognizer.dr_common import DigitsRecognizerException
+from nn.ff.digits.d_common import DigitsException
 
 
 N_PIXELS = 784
 N_CLASSES = 10
 
 
-class DigitsRecognizer(
+class Digits(
     torch.nn.Module
 ):
-    '''Recognize digits on images with the size of 28x28 pixels.'''
+    '''Recognize digits in grayscale images with the size of 28x28 pixels.'''
     @custom_validate_call
     def __init__(
         self,
@@ -35,7 +35,7 @@ class DigitsRecognizer(
         '''
         super().__init__()
 
-        self.__layers = torch.nn.ModuleList()
+        self.__layers = torch.nn.Sequential()
         in_features = N_PIXELS
         for layer_size in hidden_sizes:
             self.__layers.append(
@@ -43,6 +43,9 @@ class DigitsRecognizer(
                     in_features,
                     layer_size
                 )
+            )
+            self.__layers.append(
+                torch.nn.ReLU()
             )
             in_features = layer_size
 
@@ -52,8 +55,6 @@ class DigitsRecognizer(
                 N_CLASSES
             )
         )
-
-        self._relu = torch.nn.ReLU()
 
         self._loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -85,20 +86,10 @@ class DigitsRecognizer(
         out = image_tensors.to(
             self.__device
         )
-        for i, layer in enumerate(
-            self.__layers
-        ):
-            out = layer(
-                out
-            )
-            if i < len(
-                self.__layers
-            ) - 1:
-                out = self._relu(
-                    out
-                )
 
-        return out
+        return self.__layers(
+            out
+        )
 
     @custom_validate_call
     def prepare_mnist_dataset(
@@ -117,7 +108,7 @@ class DigitsRecognizer(
         )
 
         if root_folder.exists() and not root_folder.is_dir():
-            raise DigitsRecognizerException(
+            raise DigitsException(
                 (
                     'Root folder for the MNIST dataset cannot be created, '
                     f'because a file with the same path exists: {root_folder}'
@@ -291,7 +282,7 @@ class DigitsRecognizer(
                     pth_file
                 )
             elif not pth_file:
-                raise DigitsRecognizerException(
+                raise DigitsException(
                     f'Specified .PTH file path to save the model parameters is incorrect: {pth_file}'
                 )
             torch.save(
@@ -309,7 +300,7 @@ class DigitsRecognizer(
         img_paths: list[Path]
     ) -> dict[Path, Annotated[int, Ge(0), Le(9)]]:
         '''
-        Recognize digits on the images.
+        Recognize digits in the grayscale images.
 
         :param img_paths:  List of image paths.
 
@@ -377,7 +368,7 @@ class DigitsRecognizer(
         if not img.shape == (
             1, 28, 28
         ):
-            raise DigitsRecognizerException(
+            raise DigitsException(
                 f'{img_path} has incorrect shape: {img.shape}!'
             )
 
